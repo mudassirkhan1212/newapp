@@ -1,0 +1,72 @@
+/* @media only screen and  (max-width: 1200px) {  } */
+
+@media only screen and (max-width:1160px)   {  }
+
+@media only screen and (max-width:991px){
+  /*RESPONSIVE NAVIGATION*/
+  .mobile-menu{
+    display: block;
+  }
+  /*RESPONSIVE NAVIGATION*/
+}
+
+@media only screen and  (max-width: 768px)  {  }
+
+@media only screen and  (max-width: 576px)  { 
+  .green-txt {
+    font-size: 14px;
+     }
+    .exp-txt {
+      font-size: 15px;
+    }
+ .shad1 img {
+    width: 7%;
+    height: 0%;
+}
+.skills h6 {
+    font-size: 14px;
+    
+}
+.dis img {
+  width: 10%;
+  height: 0%;
+}
+.withou-img {
+    padding: 80px 0px 0px 20px;
+}
+.name h4 {
+    font-size: 17px;
+   
+}
+.profile h5 {
+    font-size: 15px;
+   
+}
+.profile p {
+
+    font-size: 16px;
+     font-family: auto; 
+    padding-right: 15px;
+}
+.edu p {
+
+    font-size: 14px;
+
+}
+.experience p {
+
+    font-size: 12px;
+
+}
+.shad1 {
+ 
+    padding-right: 15px;
+}
+.contact {
+    padding: 30px 0px 0px 10px;
+    display: none;
+}
+ }
+
+@media only screen and  (max-width: 375px)  {  }
+
