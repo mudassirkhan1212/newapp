@@ -4,195 +4,851 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Social App</title>
-    <!-- Latest compiled and minified CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-
-    <!-- Latest compiled JavaScript -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f0f2f5;
         max-width: 600px;
-        margin: 20px auto;
-        padding: 0 10px;
+        margin: 0 auto;
+        padding: 20px 10px;
       }
-      h2 {
-        text-align: center;
+
+      /* ── Auth Modal ── */
+      .modal-content {
+        border-radius: 1rem !important;
       }
-      form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 20px;
+      .auth-panels {
+        overflow: hidden;
       }
-      input[type="text"],
-      input[type="file"] {
-        padding: 8px;
-        font-size: 16px;
-      }
-      button {
-        padding: 10px;
-        font-size: 16px;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px;
-      }
-      button:hover {
-        background-color: #45a049;
-      }
-      #imagePreview {
-        max-width: 100%;
-        margin-top: 10px;
+      .panel.hidden {
         display: none;
       }
-      .post {
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        background-color: #f9f9f9;
+      .auth-tab-btn {
+        border: none;
+        background: none;
+        padding: 8px 20px;
+        font-weight: 600;
+        color: #aaa;
+        position: relative;
+        cursor: pointer;
+        transition: color 0.2s;
       }
-      .post img {
-        max-width: 100%;
-        border-radius: 5px;
+      .auth-tab-btn.active {
+        color: #0d6efd;
+      }
+      .auth-tab-btn.active::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #0d6efd;
+        border-radius: 2px;
+      }
+      .tab-bar {
+        border-bottom: 1px solid #e9ecef;
+        margin-bottom: 1.5rem;
+      }
+      .divider-or {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #aaa;
+        font-size: 0.8rem;
+        margin: 1.2rem 0;
+      }
+      .divider-or::before,
+      .divider-or::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: #e9ecef;
+      }
+      .google-btn img {
+        width: 20px;
+      }
+
+      /* ── Navbar / Header ── */
+      .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding: 12px 16px;
+        background: #fff;
+        border-radius: 0.85rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+      }
+      .app-header h1 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      /* ── Create Post trigger ── */
+      .create-post-bar {
+        background: #fff;
+        border-radius: 0.85rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        cursor: pointer;
+      }
+      .create-post-bar .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+      }
+      .create-post-bar input {
+        border: 1.5px solid #e9ecef;
+        border-radius: 2rem;
+        padding: 8px 16px;
+        font-size: 0.9rem;
+        color: #aaa;
+        background: #f8f9fb;
+        width: 100%;
+        cursor: pointer;
+        pointer-events: none;
+      }
+
+      /* ── Post Modal ── */
+      .upload-zone {
+        border: 2px dashed #dee2e6;
+        border-radius: 0.85rem;
+        min-height: 120px;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .upload-zone:hover {
+        border-color: #0d6efd;
+        background: #f0f4ff;
+      }
+
+      /* ── Feed ── */
+      .post-card {
+        background: #fff;
+        border-radius: 0.85rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+      .post-card .post-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+      }
+      .post-card .avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+      }
+      .post-card .post-body {
+        padding: 0 16px 12px;
+        font-size: 0.92rem;
+      }
+      .post-card img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+      }
+      .post-card .post-footer {
+        display: flex;
+        gap: 16px;
+        padding: 10px 16px;
+        border-top: 1px solid #f0f2f5;
+      }
+      .post-card .post-footer button {
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        padding: 4px 0;
+        transition: color 0.2s;
+      }
+      .post-card .post-footer button:hover {
+        color: #0d6efd;
       }
       .loading {
         text-align: center;
-        color: gray;
+        color: #aaa;
+        padding: 24px 0;
+      }
+      .empty-feed {
+        text-align: center;
+        color: #aaa;
+        padding: 40px 0;
+      }
+      .empty-feed i {
+        font-size: 2.5rem;
+        display: block;
+        margin-bottom: 8px;
       }
     </style>
   </head>
   <body>
-    <h2>Create Post</h2>
-
-    <form id="postForm">
-      <input
-        type="file"
-        name="image"
-        id="imageInput"
-        accept="image/*"
-        required
-      />
-      <img id="imagePreview" alt="Image Preview" />
-      <input type="text" name="caption" placeholder="Write caption..." />
-      <button type="submit">Post</button>
-    </form>
-
-    <hr />
-
-    <h2>Feed</h2>
-    <div id="feed">
-      <p class="loading">Loading posts...</p>
+    <!-- Header -->
+    <div class="app-header">
+      <h1>
+        <i class="bi bi-lightning-charge-fill text-primary me-1"></i>SocialApp
+      </h1>
+      <div class="d-flex gap-2">
+        <button
+          class="btn btn-sm btn-outline-secondary rounded-3"
+          data-bs-toggle="modal"
+          data-bs-target="#authModal"
+        >
+          <i class="bi bi-person me-1"></i>Sign In
+        </button>
+      </div>
     </div>
-<style>
-  .card {
-    padding: 50px;
-  }
-</style>
-    <section>
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4">
-            <div class="card">
-              <div>
-                <p>post here</p>
+
+    <!-- Create Post Bar (Facebook-style trigger) -->
+    <div
+      class="create-post-bar"
+      data-bs-toggle="modal"
+      data-bs-target="#postModal"
+    >
+      <div class="avatar">J</div>
+      <input type="text" placeholder="What's on your mind, John?" readonly />
+      <button class="btn btn-light btn-sm rounded-3 text-muted flex-shrink-0">
+        <i class="bi bi-plus-lg text-success"></i>
+      </button>
+    </div>
+
+    <!-- ══════════ POST MODAL ══════════ -->
+    <div
+      class="modal fade"
+      id="postModal"
+      tabindex="-1"
+      data-bs-backdrop="static"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header border-0 px-4 pt-4 pb-2">
+            <div class="d-flex align-items-center gap-2">
+              <div
+                class="avatar rounded-circle bg-primary bg-gradient d-flex align-items-center justify-content-center text-white fw-bold"
+                style="width: 38px; height: 38px; font-size: 0.9rem"
+              >
+                J
               </div>
               <div>
+                <div
+                  class="fw-semibold"
+                  style="font-size: 0.9rem; line-height: 1.2"
+                >
+                  John Doe
+                </div>
+                <div class="text-muted" style="font-size: 0.72rem">
+                  <i class="bi bi-globe2 me-1"></i>Public
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <div class="modal-body px-4 py-2">
+            <form id="postForm">
+              <textarea
+                class="form-control border-0 bg-transparent p-0 mb-3"
+                name="caption"
+                id="captionInput"
+                rows="3"
+                maxlength="300"
+                placeholder="What's on your mind, John?"
+                style="
+                  resize: none;
+                  font-size: 1rem;
+                  outline: none;
+                  box-shadow: none;
+                "
+              ></textarea>
+
+              <div id="previewWrapper" class="position-relative mb-3 d-none">
                 <img
-                  src="./img/kisspng-javascript-logo-product-design-brand-1713939908433.webp"
-                  width=""
-                  alt=""
+                  id="imagePreview"
+                  alt="Preview"
+                  class="w-100 rounded-3"
+                  style="max-height: 260px; object-fit: cover"
                 />
+                <button
+                  type="button"
+                  id="removeBtn"
+                  class="btn btn-dark btn-sm position-absolute top-0 end-0 m-2 rounded-circle d-flex align-items-center justify-content-center p-0"
+                  style="width: 28px; height: 28px; opacity: 0.8"
+                >
+                  <i class="bi bi-x"></i>
+                </button>
               </div>
+
+              <div class="upload-zone mb-3" id="uploadZone">
+                <input
+                  type="file"
+                  name="image"
+                  id="imageInput"
+                  accept="image/*"
+                  style="
+                    position: absolute;
+                    inset: 0;
+                    opacity: 0;
+                    cursor: pointer;
+                  "
+                />
+                <i class="bi bi-image fs-2 mb-1 text-primary"></i>
+                <span style="font-size: 0.82rem"
+                  >Click or drag to add a photo</span
+                >
+              </div>
+
+              <div
+                class="text-end text-muted mb-2"
+                id="charCount"
+                style="font-size: 0.75rem"
+              >
+                0 / 300
+              </div>
+
+              <div
+                class="d-flex align-items-center justify-content-between border-top pt-3 pb-1"
+              >
+                <div class="d-flex gap-2">
+                  <button
+                    type="button"
+                    class="btn btn-light btn-sm rounded-3 text-muted"
+                  >
+                    <i class="bi bi-emoji-smile me-1"></i>Emoji
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-light btn-sm rounded-3 text-muted"
+                  >
+                    <i class="bi bi-geo-alt me-1"></i>Location
+                  </button>
+                </div>
+                <button
+                  type="submit"
+                  id="postBtn"
+                  class="btn btn-primary rounded-3 fw-semibold px-4"
+                  style="
+                    background: linear-gradient(135deg, #0d6efd, #6610f2);
+                    border: none;
+                  "
+                  disabled
+                >
+                  <i class="bi bi-send me-1"></i>Post
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ AUTH MODAL ══════════ -->
+    <div
+      class="modal fade"
+      id="authModal"
+      data-bs-backdrop="static"
+      data-bs-keyboard="false"
+      tabindex="-1"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header border-0 pb-0 px-4 pt-3 justify-content-end">
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+
+          <div class="modal-body px-4 pb-4 auth-panels">
+            <!-- Tab Bar -->
+            <div class="tab-bar d-flex mb-0">
+              <button
+                class="auth-tab-btn active"
+                id="tabSignIn"
+                onclick="switchTab('signin')"
+              >
+                Sign In
+              </button>
+              <button
+                class="auth-tab-btn"
+                id="tabSignUp"
+                onclick="switchTab('signup')"
+              >
+                Sign Up
+              </button>
+            </div>
+
+            <!-- Sign In -->
+            <div class="panel" id="panelSignIn">
+              <div class="text-center mb-4">
+                <h5 class="fw-bold mb-1">Welcome Back 👋</h5>
+                <p class="text-muted small mb-0">
+                  Sign in to access your account
+                </p>
+              </div>
+              <div class="form-floating mb-3">
+                <input
+                  type="email"
+                  class="form-control rounded-3"
+                  id="siEmail"
+                  placeholder="name@example.com"
+                />
+                <label for="siEmail"
+                  ><i class="bi bi-envelope me-2"></i>Email address</label
+                >
+              </div>
+              <div class="form-floating mb-3">
+                <input
+                  type="password"
+                  class="form-control rounded-3"
+                  id="siPassword"
+                  placeholder="Password"
+                />
+                <label for="siPassword"
+                  ><i class="bi bi-lock me-2"></i>Password</label
+                >
+              </div>
+              <div class="d-flex justify-content-between mb-3 small">
+                <label
+                  class="d-flex align-items-center gap-1"
+                  style="cursor: pointer"
+                >
+                  <input class="form-check-input mt-0" type="checkbox" />
+                  Remember me
+                </label>
+                <a href="#" class="text-decoration-none">Forgot password?</a>
+              </div>
+              <button class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                Sign In
+              </button>
+              <div class="divider-or">OR</div>
+              <div
+                id="g_id_onload"
+                data-client_id="476730264996-hrlisknlp3csc2hth4lqk3j2ik18a1up.apps.googleusercontent.com"
+                data-callback="handleGoogleSignIn"
+                data-auto_prompt="false"
+              ></div>
+              <div
+                class="g_id_signin"
+                data-type="standard"
+                data-theme="outline"
+                data-text="continue_with"
+                data-shape="rectangular"
+                data-width="100%"
+              ></div>
+              <p class="text-center mt-4 small text-muted mb-0">
+                Don't have an account?
+                <a
+                  href="#"
+                  class="text-decoration-none fw-semibold"
+                  onclick="
+                    switchTab('signup');
+                    return false;
+                  "
+                  >Sign up</a
+                >
+              </p>
+            </div>
+
+            <!-- Sign Up -->
+            <div class="panel hidden" id="panelSignUp">
+              <div class="text-center mb-4">
+                <h5 class="fw-bold mb-1">Create an Account 🚀</h5>
+                <p class="text-muted small mb-0">Get started — it's free</p>
+              </div>
+              <div class="form-floating mb-3">
+                <input
+                  type="email"
+                  class="form-control rounded-3"
+                  id="suEmail"
+                  placeholder="name@example.com"
+                />
+                <label for="suEmail"
+                  ><i class="bi bi-envelope me-2"></i>Email address</label
+                >
+              </div>
+              <div class="form-floating mb-3">
+                <input
+                  type="password"
+                  class="form-control rounded-3"
+                  id="suPassword"
+                  placeholder="Password"
+                />
+                <label for="suPassword"
+                  ><i class="bi bi-lock me-2"></i>Password</label
+                >
+              </div>
+              <button class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                Create Account
+              </button>
+              <div class="divider-or">OR</div>
+              <div
+                id="g_id_onload"
+                data-client_id="476730264996-hrlisknlp3csc2hth4lqk3j2ik18a1up.apps.googleusercontent.com"
+                data-callback="handleGoogleSignIn"
+                data-auto_prompt="false"
+              ></div>
+              <div
+                class="g_id_signin"
+                data-type="standard"
+                data-theme="outline"
+                data-text="continue_with"
+                data-shape="rectangular"
+                data-width="100%"
+              ></div>
+              <p class="text-center mt-4 small text-muted mb-0">
+                Already have an account?
+                <a
+                  href="#"
+                  class="text-decoration-none fw-semibold"
+                  onclick="
+                    switchTab('signin');
+                    return false;
+                  "
+                  >Sign in</a
+                >
+              </p>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+
+    <!-- ══════════ FEED ══════════ -->
+    <div id="feed">
+      <p class="loading"><i class="bi bi-arrow-repeat"></i> Loading posts...</p>
+    </div>
 
     <script>
-      const form = document.getElementById("postForm");
-      const feed = document.getElementById("feed");
-      const imageInput = document.getElementById("imageInput");
-      const imagePreview = document.getElementById("imagePreview");
+      function handleGoogleSignIn(response) {
+        fetch("/api/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken: response.credential }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.error) return alert(data.error);
+            localStorage.setItem("token", data.token);
+            bootstrap.Modal.getInstance(
+              document.getElementById("authModal"),
+            ).hide();
+            onAuthSuccess(data.user);
+          })
+          .catch(() => alert("Google sign in failed."));
+      }
 
-      // Preview selected image
-      imageInput.addEventListener("change", () => {
-        const file = imageInput.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            imagePreview.src = e.target.result;
-            imagePreview.style.display = "block";
-          };
-          reader.readAsDataURL(file);
-        } else {
-          imagePreview.style.display = "none";
-        }
-      });
+      // ══════════ AUTH ══════════
 
-      // Submit Post
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
+      function requireAuth() {
+        if (localStorage.getItem("token")) return true;
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("authModal"),
+        ).show();
+        return false;
+      }
 
-        const formData = new FormData(form);
+      // Block post modal if not logged in
+      document
+        .getElementById("postModal")
+        .addEventListener("show.bs.modal", (e) => {
+          if (!requireAuth()) e.preventDefault();
+        });
 
-        try {
-          const res = await fetch("http://localhost:5000/create-post", {
-            // <-- replace with your deployed backend
-            method: "POST",
-            body: formData,
-          });
+      function switchTab(tab) {
+        const isSignIn = tab === "signin";
+        document
+          .getElementById("panelSignIn")
+          .classList.toggle("hidden", !isSignIn);
+        document
+          .getElementById("panelSignUp")
+          .classList.toggle("hidden", isSignIn);
+        document
+          .getElementById("tabSignIn")
+          .classList.toggle("active", isSignIn);
+        document
+          .getElementById("tabSignUp")
+          .classList.toggle("active", !isSignIn);
+      }
 
-          if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(`Failed to upload post: ${errorData.error}`);
+      // Sign In
+      document
+        .querySelector("#panelSignIn .btn-primary")
+        .addEventListener("click", async () => {
+          const email = document.getElementById("siEmail").value.trim();
+          const password = document.getElementById("siPassword").value;
+          if (!email || !password) return alert("Please fill in all fields.");
+
+          try {
+            const res = await fetch("/api/auth/signin", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (!res.ok) return alert(data.error);
+            localStorage.setItem("token", data.token);
+            bootstrap.Modal.getInstance(
+              document.getElementById("authModal"),
+            ).hide();
+            onAuthSuccess(data.user);
+          } catch {
+            alert("Something went wrong. Please try again.");
           }
+        });
 
-          form.reset();
-          imagePreview.style.display = "none";
-          loadPosts();
-        } catch (err) {
-          alert(err.message);
-          console.error(err);
-        }
-      });
+      // Sign Up
+      document
+        .querySelector("#panelSignUp .btn-primary")
+        .addEventListener("click", async () => {
+          const email = document.getElementById("suEmail").value.trim();
+          const password = document.getElementById("suPassword").value;
+          if (!email || !password) return alert("Please fill in all fields.");
 
-      // Load Posts
-      async function loadPosts() {
-        feed.innerHTML = '<p class="loading">Loading posts...</p>';
-        try {
-          const res = await fetch("http://localhost:5000/posts"); // <-- replace with your deployed backend
-          const posts = await res.json();
-
-          feed.innerHTML = "";
-          if (posts.length === 0) {
-            feed.innerHTML = "<p>No posts yet!</p>";
-            return;
+          try {
+            const res = await fetch("/api/auth/signup", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+            const data = await res.json();
+            if (!res.ok) return alert(data.error);
+            localStorage.setItem("token", data.token);
+            bootstrap.Modal.getInstance(
+              document.getElementById("authModal"),
+            ).hide();
+            onAuthSuccess(data.user);
+          } catch {
+            alert("Something went wrong. Please try again.");
           }
+        });
 
-          posts.forEach((post) => {
-            const div = document.createElement("div");
-            div.className = "post";
-            div.innerHTML = `
-        <img src="${post.imageUrl}" alt="Post Image" />
-        <p>${post.caption}</p>
-        <small>${new Date(post.createdAt).toLocaleString()}</small>
-      `;
-            feed.appendChild(div);
-          });
-        } catch (err) {
-          feed.innerHTML = `<p class="loading">Failed to load posts.</p>`;
-          console.error(err);
+      function onAuthSuccess(user) {
+        document.querySelectorAll(".avatar").forEach((el) => {
+          el.textContent = user.email[0].toUpperCase();
+        });
+        const authBtn = document.querySelector('[data-bs-target="#authModal"]');
+        if (authBtn) {
+          authBtn.removeAttribute("data-bs-toggle");
+          authBtn.removeAttribute("data-bs-target");
+          authBtn.innerHTML =
+            '<i class="bi bi-box-arrow-right me-1"></i>Sign Out';
+          authBtn.addEventListener("click", signOut);
         }
       }
 
-      // Initial load
+      function signOut() {
+        localStorage.removeItem("token");
+        location.reload();
+      }
+
+      // Restore UI on page load if already logged in
+      (function init() {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          if (payload.exp * 1000 < Date.now())
+            return localStorage.removeItem("token");
+          onAuthSuccess({ email: payload.email });
+        } catch {
+          localStorage.removeItem("token");
+        }
+      })();
+
+      // ══════════ POST FORM ══════════
+
+      const imageInput = document.getElementById("imageInput");
+      const imagePreview = document.getElementById("imagePreview");
+      const previewWrap = document.getElementById("previewWrapper");
+      const uploadZone = document.getElementById("uploadZone");
+      const removeBtn = document.getElementById("removeBtn");
+      const captionInput = document.getElementById("captionInput");
+      const charCount = document.getElementById("charCount");
+      const postBtn = document.getElementById("postBtn");
+      const postForm = document.getElementById("postForm");
+      const feed = document.getElementById("feed");
+
+      function checkReady() {
+        postBtn.disabled = !(
+          imageInput.files.length || captionInput.value.trim()
+        );
+      }
+
+      function showPreview(file) {
+        if (!file) return;
+        imagePreview.src = URL.createObjectURL(file);
+        previewWrap.classList.remove("d-none");
+        uploadZone.classList.add("d-none");
+        checkReady();
+      }
+
+      function clearImage() {
+        imagePreview.src = "";
+        previewWrap.classList.add("d-none");
+        uploadZone.classList.remove("d-none");
+        imageInput.value = "";
+        checkReady();
+      }
+
+      imageInput.addEventListener("change", (e) =>
+        showPreview(e.target.files[0]),
+      );
+      removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        clearImage();
+      });
+
+      uploadZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = "#0d6efd";
+        uploadZone.style.background = "#f0f4ff";
+      });
+      uploadZone.addEventListener("dragleave", () => {
+        uploadZone.style.borderColor = "";
+        uploadZone.style.background = "";
+      });
+      uploadZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = "";
+        uploadZone.style.background = "";
+        const f = e.dataTransfer.files[0];
+        if (f?.type.startsWith("image/")) {
+          const dt = new DataTransfer();
+          dt.items.add(f);
+          imageInput.files = dt.files;
+          showPreview(f);
+        }
+      });
+
+      captionInput.addEventListener("input", () => {
+        const l = captionInput.value.length;
+        charCount.textContent = `${l} / 300`;
+        charCount.style.color =
+          l >= 300 ? "#dc3545" : l >= 250 ? "#f0ad4e" : "";
+        checkReady();
+      });
+
+      // Submit Post (with auth token)
+      postForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        postBtn.innerHTML =
+          '<span class="spinner-border spinner-border-sm me-1"></span>Posting...';
+        postBtn.disabled = true;
+
+        const formData = new FormData(postForm);
+        const token = localStorage.getItem("token");
+
+        try {
+          const res = await fetch("/create-post", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData,
+          });
+          if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.error);
+          }
+
+          postBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Posted!';
+          setTimeout(() => {
+            bootstrap.Modal.getInstance(
+              document.getElementById("postModal"),
+            ).hide();
+            postBtn.innerHTML = '<i class="bi bi-send me-1"></i>Post';
+            clearImage();
+            captionInput.value = "";
+            charCount.textContent = "0 / 300";
+            loadPosts();
+          }, 1200);
+        } catch (err) {
+          alert(err.message);
+          postBtn.innerHTML = '<i class="bi bi-send me-1"></i>Post';
+          checkReady();
+        }
+      });
+
+      // ══════════ FEED ══════════
+
+      function renderPost(post) {
+        const div = document.createElement("div");
+        div.className = "post-card";
+        div.innerHTML = `
+      ${post.caption ? `<div class="post-body" style="margin:10px 0;">${post.caption}</div>` : ""}
+      ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post image"/>` : ""}
+    `;
+        return div;
+      }
+
+      async function loadPosts() {
+        feed.innerHTML =
+          '<p class="loading"><i class="bi bi-arrow-repeat"></i> Loading posts...</p>';
+        try {
+          const res = await fetch("/posts");
+          const posts = await res.json();
+          feed.innerHTML = "";
+          if (!posts.length) {
+            feed.innerHTML =
+              '<div class="empty-feed"><i class="bi bi-journal-x"></i>No posts yet. Be the first!</div>';
+            return;
+          }
+          posts.forEach((p) => feed.appendChild(renderPost(p)));
+        } catch {
+          feed.innerHTML =
+            '<p class="loading">Could not load posts. Make sure the server is running.</p>';
+        }
+      }
+
       loadPosts();
     </script>
   </body>

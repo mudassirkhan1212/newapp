@@ -6,6 +6,7 @@ const imagestorage = require("./models/imagestorage");
 const cloudinary = require("cloudinary").v2;
 const MongoDBconnection = require("./connection");
 const postRoutes = require("./routes/postroutes");
+const authRoutes     = require('./routes/authRoutes');
 
 const dotenv = require("dotenv");
 const bodyparser = require("body-parser");
@@ -33,7 +34,9 @@ MongoDBconnection();
 
 
 // Use routes
-app.use("/", postRoutes);
+
+app.use('/api/auth', authRoutes);   // /api/auth/signin, /api/auth/signup, /api/auth/google
+app.use('/', postRoutes);           // /, /create-post, /posts
 
 const port = 5000;
 app.listen(port, () => {

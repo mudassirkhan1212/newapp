@@ -12,7 +12,10 @@ router.get("/", (req, res) => {
   res.render("home");
 });
 
+
+
 router.post("/create-post", upload.single("image"), createPost);
 router.get("/posts", getPosts);
 
 module.exports = router;
+
