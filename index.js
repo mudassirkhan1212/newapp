@@ -14,6 +14,10 @@ const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
 const multer = require("multer");
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
+
+
 
 // convert data into json format
 app.use(express.json());
@@ -37,6 +41,7 @@ MongoDBconnection();
 
 app.use('/api/auth', authRoutes);   // /api/auth/signin, /api/auth/signup, /api/auth/google
 app.use('/', postRoutes);           // /, /create-post, /posts
+
 
 const port = 5000;
 app.listen(port, () => {

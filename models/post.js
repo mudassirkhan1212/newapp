@@ -1,22 +1,15 @@
-const mongoose = require('mongoose')
-const multer = require("multer");
+const mongoose = require('mongoose');
 const dotenv = require("dotenv");
 dotenv.config();
 
-
-
-// Post Schema
-
-
-
 const postSchema = new mongoose.Schema({
   user:      { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  caption:   { type: String, default: '' },
-  imageUrl:  { type: String, default: '' },
+  caption:   { type: String, default: null },   // ✅ null instead of ''
+  imageUrl:  { type: String, default: null },   // ✅ null instead of ''
+  publicId:  { type: String, default: null },   // ✅ added for Cloudinary
   createdAt: { type: Date, default: Date.now },
 });
-const Post = new mongoose.model("Post", postSchema);
+
+const Post = mongoose.model("Post", postSchema);
 
 module.exports = Post;
-
-

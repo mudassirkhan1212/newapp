@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Social App</title>
+    <title>App</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -14,226 +14,12 @@
     />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
-    <style>
-      body {
-        font-family: "Segoe UI", Arial, sans-serif;
-        background: #f0f2f5;
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px 10px;
-      }
-
-      /* ── Auth Modal ── */
-      .modal-content {
-        border-radius: 1rem !important;
-      }
-      .auth-panels {
-        overflow: hidden;
-      }
-      .panel.hidden {
-        display: none;
-      }
-      .auth-tab-btn {
-        border: none;
-        background: none;
-        padding: 8px 20px;
-        font-weight: 600;
-        color: #aaa;
-        position: relative;
-        cursor: pointer;
-        transition: color 0.2s;
-      }
-      .auth-tab-btn.active {
-        color: #0d6efd;
-      }
-      .auth-tab-btn.active::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: #0d6efd;
-        border-radius: 2px;
-      }
-      .tab-bar {
-        border-bottom: 1px solid #e9ecef;
-        margin-bottom: 1.5rem;
-      }
-      .divider-or {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #aaa;
-        font-size: 0.8rem;
-        margin: 1.2rem 0;
-      }
-      .divider-or::before,
-      .divider-or::after {
-        content: "";
-        flex: 1;
-        height: 1px;
-        background: #e9ecef;
-      }
-      .google-btn img {
-        width: 20px;
-      }
-
-      /* ── Navbar / Header ── */
-      .app-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px;
-        padding: 12px 16px;
-        background: #fff;
-        border-radius: 0.85rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-      }
-      .app-header h1 {
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin: 0;
-      }
-
-      /* ── Create Post trigger ── */
-      .create-post-bar {
-        background: #fff;
-        border-radius: 0.85rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-        padding: 12px 16px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-        cursor: pointer;
-      }
-      .create-post-bar .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #0d6efd, #6610f2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-weight: 700;
-        font-size: 0.95rem;
-        flex-shrink: 0;
-      }
-      .create-post-bar input {
-        border: 1.5px solid #e9ecef;
-        border-radius: 2rem;
-        padding: 8px 16px;
-        font-size: 0.9rem;
-        color: #aaa;
-        background: #f8f9fb;
-        width: 100%;
-        cursor: pointer;
-        pointer-events: none;
-      }
-
-      /* ── Post Modal ── */
-      .upload-zone {
-        border: 2px dashed #dee2e6;
-        border-radius: 0.85rem;
-        min-height: 120px;
-        cursor: pointer;
-        transition:
-          border-color 0.2s,
-          background 0.2s;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      .upload-zone:hover {
-        border-color: #0d6efd;
-        background: #f0f4ff;
-      }
-
-      /* ── Feed ── */
-      .post-card {
-        background: #fff;
-        border-radius: 0.85rem;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
-        margin-bottom: 16px;
-        overflow: hidden;
-      }
-      .post-card .post-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 16px;
-      }
-      .post-card .avatar {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #0d6efd, #6610f2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-weight: 700;
-        font-size: 0.85rem;
-        flex-shrink: 0;
-      }
-      .post-card .post-body {
-        padding: 0 16px 12px;
-        font-size: 0.92rem;
-      }
-      .post-card img {
-        width: 100%;
-        max-height: 400px;
-        object-fit: cover;
-      }
-      .post-card .post-footer {
-        display: flex;
-        gap: 16px;
-        padding: 10px 16px;
-        border-top: 1px solid #f0f2f5;
-      }
-      .post-card .post-footer button {
-        background: none;
-        border: none;
-        color: #666;
-        font-size: 0.85rem;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        cursor: pointer;
-        padding: 4px 0;
-        transition: color 0.2s;
-      }
-      .post-card .post-footer button:hover {
-        color: #0d6efd;
-      }
-      .loading {
-        text-align: center;
-        color: #aaa;
-        padding: 24px 0;
-      }
-      .empty-feed {
-        text-align: center;
-        color: #aaa;
-        padding: 40px 0;
-      }
-      .empty-feed i {
-        font-size: 2.5rem;
-        display: block;
-        margin-bottom: 8px;
-      }
-    </style>
+    <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
     <!-- Header -->
     <div class="app-header">
-      <h1>
-        <i class="bi bi-lightning-charge-fill text-primary me-1"></i>SocialApp
-      </h1>
+      <h1><i class="bi bi-lightning-charge-fill text-primary me-1"></i>App</h1>
       <div class="d-flex gap-2">
         <button
           class="btn btn-sm btn-outline-secondary rounded-3"
@@ -243,19 +29,6 @@
           <i class="bi bi-person me-1"></i>Sign In
         </button>
       </div>
-    </div>
-
-    <!-- Create Post Bar (Facebook-style trigger) -->
-    <div
-      class="create-post-bar"
-      data-bs-toggle="modal"
-      data-bs-target="#postModal"
-    >
-      <div class="avatar">J</div>
-      <input type="text" placeholder="What's on your mind, John?" readonly />
-      <button class="btn btn-light btn-sm rounded-3 text-muted flex-shrink-0">
-        <i class="bi bi-plus-lg text-success"></i>
-      </button>
     </div>
 
     <!-- ══════════ POST MODAL ══════════ -->
@@ -411,7 +184,7 @@
 
           <div class="modal-body px-4 pb-4 auth-panels">
             <!-- Tab Bar -->
-            <div class="tab-bar d-flex mb-0">
+            <!-- <div class="tab-bar d-flex mb-0">
               <button
                 class="auth-tab-btn active"
                 id="tabSignIn"
@@ -426,12 +199,12 @@
               >
                 Sign Up
               </button>
-            </div>
+            </div> -->
 
             <!-- Sign In -->
             <div class="panel" id="panelSignIn">
               <div class="text-center mb-4">
-                <h5 class="fw-bold mb-1">Welcome Back 👋</h5>
+                <!-- <h5 class="fw-bold mb-1">Welcome Back 👋</h5> -->
                 <p class="text-muted small mb-0">
                   Sign in to access your account
                 </p>
@@ -503,8 +276,8 @@
             <!-- Sign Up -->
             <div class="panel hidden" id="panelSignUp">
               <div class="text-center mb-4">
-                <h5 class="fw-bold mb-1">Create an Account 🚀</h5>
-                <p class="text-muted small mb-0">Get started — it's free</p>
+                <!-- <h5 class="fw-bold mb-1">Create an Account 🚀</h5> -->
+                <p class="text-muted small mb-0">Sign up to post</p>
               </div>
               <div class="form-floating mb-3">
                 <input
@@ -564,11 +337,51 @@
       </div>
     </div>
 
-    <!-- ══════════ FEED ══════════ -->
-    <div id="feed">
-      <p class="loading"><i class="bi bi-arrow-repeat"></i> Loading posts...</p>
-    </div>
+    <!-- Your actual layout -->
+    <section>
+      <div class="container">
+        <div></div>
+        <div class="row">
+          <div class="col"></div>
+          <div class="col-md-5">
+            <!-- Create Post Bar (Facebook-style trigger) -->
+            <div
+              class="create-post-bar"
+              data-bs-toggle="modal"
+              data-bs-target="#postModal"
+            >
+              <!-- <div class="avatar">J</div> -->
+              <input type="text" placeholder="What's on your mind ?" readonly />
+              <button
+                class="btn btn-light btn-sm rounded-3 text-muted flex-shrink-0"
+              >
+                <i class="bi bi-plus-lg text-success"></i>
+              </button>
+            </div>
+            <!-- ══════════ FEED ══════════ -->
+            <div id="feed">
+              <p class="loading">
+                <i class="bi bi-arrow-repeat"></i> Loading posts...
+              </p>
+            </div>
+          </div>
+          <div class="col"></div>
+        </div>
+      </div>
+    </section>
+    <style>
+      div.polaroid {
+        background-color: white;
+        box-shadow:
+          0 4px 8px 0 rgba(0, 0, 0, 0.2),
+          0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        margin-bottom: 5px;
+      }
 
+      div.containerr {
+        padding: 15px 15px;
+      }
+    </style>
     <script>
       function handleGoogleSignIn(response) {
         fetch("/api/auth/google", {
@@ -821,13 +634,16 @@
       // ══════════ FEED ══════════
 
       function renderPost(post) {
-        const div = document.createElement("div");
-        div.className = "post-card";
-        div.innerHTML = `
-      ${post.caption ? `<div class="post-body" style="margin:10px 0;">${post.caption}</div>` : ""}
-      ${post.imageUrl ? `<img src="${post.imageUrl}" alt="Post image"/>` : ""}
-    `;
-        return div;
+        const template = document.getElementById("post-template");
+        const card = template.content.cloneNode(true);
+
+        const body = card.querySelector(".post-body");
+        const img = card.querySelector(".post-image");
+
+        post.caption ? (body.textContent = post.caption) : body.remove();
+        post.imageUrl ? (img.src = post.imageUrl) : img.remove();
+
+        return card;
       }
 
       async function loadPosts() {
@@ -851,5 +667,13 @@
 
       loadPosts();
     </script>
+
+    <!-- Hidden blueprint — place this anywhere, e.g. before </body> -->
+    <template id="post-template">
+      <div class="polaroid">
+        <div class="post-body containerr"></div>
+        <img class="post-image" alt="Post image" style="width: 100%" />
+      </div>
+    </template>
   </body>
 </html>

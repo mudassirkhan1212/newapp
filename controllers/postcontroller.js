@@ -1,44 +1,51 @@
 const cloudinary = require('cloudinary').v2;
-const Post = require('../models/post'); // your post model
+const Post = require('../models/post');
 
-// Create Post with Watermark
+// Create Post
 exports.createPost = async (req, res) => {
   try {
     console.log("Received post request");
     console.log("File:", req.file);
     console.log("Body:", req.body);
 
-    if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
+    const caption = req.body.caption?.trim();
+
+    // ✅ Reject only if BOTH image and caption are missing
+    if (!req.file && !caption) {
+      return res.status(400).json({ error: "Post must have an image or caption" });
     }
 
-    // 1️⃣ Upload ORIGINAL image to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: 'posts',         // optional folder
-      resource_type: 'image',
-    });
+    let imageUrl = null;
+    let publicId = null;
 
-    const publicId = result.public_id; // save this for DB
+    // ✅ Only upload to Cloudinary if image exists
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: 'posts',
+        resource_type: 'image',
+      });
 
-    // 2️⃣ Generate WATERMARKED URL dynamically
-    const watermarkedUrl = cloudinary.url(publicId, {
-      transformation: [
-        {
-          overlay: 'myapp_watermark', // must exist in Cloudinary
-          gravity: 'south_east',      // bottom-right
-          width: '0.15',              // 15% of image width
-          flags: 'relative',
-          opacity: 60,
-        },
-      ],
-      secure: true,
-    });
+      publicId = result.public_id;
 
-    // 3️⃣ Save the watermarked URL in MongoDB
+      imageUrl = cloudinary.url(publicId, {
+        transformation: [
+          {
+            overlay: 'myapp_watermark',
+            gravity: 'south_east',
+            width: '0.15',
+            flags: 'relative',
+            opacity: 60,
+          },
+        ],
+        secure: true,
+      });
+    }
+
+    // ✅ Save post — imageUrl will be null for text-only posts
     const newPost = new Post({
-      caption: req.body.caption,
-      imageUrl: watermarkedUrl,
-      publicId: publicId, // optional: store original public_id
+      caption: caption || null,
+      imageUrl: imageUrl,   // null if no image
+      publicId: publicId,   // null if no image
     });
 
     await newPost.save();
