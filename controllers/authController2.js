@@ -4,6 +4,7 @@ const { OAuth2Client } = require("google-auth-library");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
+
 // ── Helper: Sign JWT ──
 const signToken = (user) =>
   jwt.sign(
@@ -11,62 +12,6 @@ const signToken = (user) =>
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
-
-// ── Helper: Verify Email via ZeroBounce API ──
-const verifyEmail = async (email) => {
-  const apiKey = process.env.ZEROBOUNCE_API_KEY;
-  const url = `https://api.zerobounce.net/v2/validate?api_key=${apiKey}&email=${encodeURIComponent(email)}`;
-
-  try {
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      // If the API itself fails, fail open — don't block signup
-      console.warn("ZeroBounce API request failed, skipping email check.");
-      return { passed: true };
-    }
-
-    const data = await response.json();
-    console.log("ZeroBounce Response:", JSON.stringify(data, null, 2)); // Remove in production
-
-    const { status, sub_status } = data;
-
-    // 1. Reject invalid emails (bad format, mailbox not found, no DNS etc.)
-    if (status === "invalid") {
-      // Give a specific message based on why it's invalid
-      if (sub_status === "mailbox_not_found") {
-        return { passed: false, reason: "This email address does not exist." };
-      }
-      if (sub_status === "failed_syntax_check" || sub_status === "possible_typo") {
-        return { passed: false, reason: "Invalid email format." };
-      }
-      if (sub_status === "no_dns_entries" || sub_status === "does_not_accept_mail") {
-        return { passed: false, reason: "Email domain does not exist or cannot receive emails." };
-      }
-      // Generic fallback for other invalid reasons
-      return { passed: false, reason: "This email address is not valid." };
-    }
-
-    // 2. Reject disposable/temp emails (mailinator, guerrillamail, etc.)
-    if (status === "do_not_mail" && sub_status === "disposable") {
-      return { passed: false, reason: "Disposable email addresses are not allowed." };
-    }
-
-    // 3. Reject spam traps
-    if (status === "spamtrap") {
-      return { passed: false, reason: "This email address is not allowed." };
-    }
-
-    // 4. Allow valid, catch-all, unknown, abuse, and role-based emails
-    // "catch-all" and "unknown" — too strict to block, real users get caught
-    return { passed: true };
-
-  } catch (err) {
-    // Network error or parse failure — fail open so signup never breaks
-    console.warn("Email verification error, skipping check:", err.message);
-    return { passed: true };
-  }
-};
 
 // ── Sign Up ──
 exports.signup = async (req, res) => {
@@ -79,12 +24,6 @@ exports.signup = async (req, res) => {
     return res.status(400).json({ error: "Password must be at least 6 characters." });
 
   try {
-    // ── Real-time email verification ──
-    const emailCheck = await verifyEmail(email);
-    if (!emailCheck.passed) {
-      return res.status(400).json({ error: emailCheck.reason });
-    }
-
     if (await User.findOne({ email }))
       return res.status(409).json({ error: "Email is already registered." });
 
