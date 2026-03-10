@@ -125,7 +125,8 @@ body {
   min-height: 120px;
   cursor: pointer;
   transition:
-  border-color 0.2s, background 0.2s;
+    border-color 0.2s,
+    background 0.2s;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -208,4 +209,25 @@ body {
   font-size: 2.5rem;
   display: block;
   margin-bottom: 8px;
+}
+
+.modal {
+  --bs-modal-width: 450px;
+}
+
+div.polaroid {
+  background-color: white;
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  margin-bottom: 5px;
+}
+
+div.containerr {
+  padding: 15px 15px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #484646;
+  line-height: 15px;
+  letter-spacing: 0.6px;
 }

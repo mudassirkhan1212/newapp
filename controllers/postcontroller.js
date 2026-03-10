@@ -4,7 +4,7 @@ const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 
-// Image Processing Helper 
+//  Image Processing Helper 
 async function processImage(filePath) {
   // 1. Validate MIME type by reading magic bytes (not trusting extension)
   const buffer = fs.readFileSync(filePath);
@@ -41,6 +41,8 @@ async function processImage(filePath) {
 }
 
 // ─── Create Post ───────────────────────────────────────────────────────────────
+
+
 exports.createPost = async (req, res) => {
   let processedImagePath = null;
   try {
@@ -84,11 +86,14 @@ exports.createPost = async (req, res) => {
       });
     }
 
-    const newPost = new Post({
-      caption: caption || null,
-      imageUrl: imageUrl,
-      publicId: publicId,
-    });
+const newPost = new Post({
+  user:            req.user.id,        // ✅ save the owner
+  caption:         caption || null,
+  imageUrl:        imageUrl,
+  publicId:        publicId,
+  pictureLocation: req.body.pictureLocation?.trim() || null,  // ✅ "taken at" heading
+  location:        req.body.location?.trim() || null,         // ✅ location paragraph
+});
 
     await newPost.save();
 
@@ -120,6 +125,42 @@ exports.getPosts = async (req, res) => {
     res.json(posts);
   } catch (err) {
     console.error("Error fetching posts:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+
+// ─── Delete Post ───────────────────────────────────────────────────────────────
+exports.deletePost = async (req, res) => {
+  console.log("DELETE HIT"); // ✅ add this as very first line
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+
+      // ✅ Add these debug lines
+    console.log("post.user:", post.user);
+    console.log("req.user:", req.user);
+
+    if (post.user?.toString() !== req.user.id?.toString()) {
+      return res.status(403).json({ error: "Not authorized to delete this post" });
+    }
+
+    // ✅ Fixed: use req.user.id instead of req.userId
+    if (post.user?.toString() !== req.user.id?.toString()) {
+      return res.status(403).json({ error: "Not authorized to delete this post" });
+    }
+
+    if (post.publicId) {
+      await cloudinary.uploader.destroy(post.publicId);
+    }
+
+    await post.deleteOne();
+    res.json({ message: "Post deleted" });
+  } catch (err) {
+    console.error("Delete error:", err);
     res.status(500).json({ error: err.message });
   }
 };

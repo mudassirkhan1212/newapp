@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const { createPost, getPosts } = require("../controllers/postcontroller");
+const { createPost, getPosts, deletePost } = require("../controllers/postcontroller");
+const authMiddleware = require("../middleware/auth"); // ✅ import it
 
 const router = express.Router();
 
@@ -14,8 +15,10 @@ router.get("/", (req, res) => {
 
 
 
-router.post("/create-post", upload.single("image"), createPost);
+router.post("/create-post", authMiddleware, upload.single("image"), createPost);
 router.get("/posts", getPosts);
+router.delete("/posts/:id", authMiddleware, deletePost);
+
 
 module.exports = router;
 

@@ -18,7 +18,7 @@
   </head>
   <body>
     <!-- Header -->
-    <div class="app-header">
+    <!-- <div class="app-header">
       <h1><i class="bi bi-lightning-charge-fill text-primary me-1"></i>App</h1>
       <div class="d-flex gap-2">
         <button
@@ -29,9 +29,31 @@
           <i class="bi bi-person me-1"></i>Sign In
         </button>
       </div>
-    </div>
+    </div> -->
+    <div class="app-header">
+  <h1><i class="bi bi-lightning-charge-fill text-primary me-1"></i>App</h1>
+  <div class="d-flex gap-2">
+    <button
+      class="btn btn-sm btn-outline-secondary rounded-3"
+      data-bs-toggle="modal"
+      data-bs-target="#authModal"
+      onclick="switchTab('signin')"
+    >
+      <i class="bi bi-person me-1"></i>Sign In
+    </button>
+    <button
+      class="btn btn-sm btn-primary rounded-3"
+      data-bs-toggle="modal"
+      data-bs-target="#authModal"
+      onclick="switchTab('signup')"
+    >
+      <i class="bi bi-person-plus me-1"></i>Sign Up
+    </button>
+  </div>
+</div>
 
     <!-- ══════════ POST MODAL ══════════ -->
+
     <div
       class="modal fade"
       id="postModal"
@@ -41,25 +63,49 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg">
           <div class="modal-header border-0 px-4 pt-4 pb-2">
-            <div class="d-flex align-items-center gap-2">
-              <div
-                class="avatar rounded-circle bg-primary bg-gradient d-flex align-items-center justify-content-center text-white fw-bold"
-                style="width: 38px; height: 38px; font-size: 0.9rem"
-              >
-                J
-              </div>
-              <div>
-                <div
-                  class="fw-semibold"
-                  style="font-size: 0.9rem; line-height: 1.2"
+            <div class="d-flex gap-2">
+              <div class="input-group input-group-sm" style="width: auto">
+                <span
+                  class="input-group-text bg-light border-end-0 text-muted rounded-start-3"
                 >
-                  John Doe
-                </div>
-                <div class="text-muted" style="font-size: 0.72rem">
-                  <i class="bi bi-globe2 me-1"></i>Public
-                </div>
+                  <i class="bi bi-geo-alt"></i>
+                </span>
+                <input
+                  type="text"
+                  id="pictureLocation-input"       
+                  list="location-options"
+                  class="form-control form-control-sm bg-light border-start-0 text-muted rounded-end-3"
+                  placeholder="About Picture"
+                  style="box-shadow: none"
+                />
+                <datalist id="location-options">
+                  <option value="New York"></option>
+                  <option value="Los Angeles"></option>
+                  <option value="Chicago"></option>
+                  <option value="Houston"></option>
+                  <option value="Phoenix"></option>
+                  <option value="isphani road, karachi"></option>
+                </datalist>
+              </div>
+
+              <div class="input-group input-group-sm" style="width: 130px">
+                <span
+                  class="input-group-text bg-light border-end-0 text-muted px-2 rounded-start-3"
+                  style="font-size: 14px"
+                >
+                  <i class="bi bi-geo-alt"></i>
+                </span>
+                <input
+                  type="text"
+                  id="location-input"
+                  id="location-input"
+                  class="form-control form-control-sm bg-light border-start-0 text-muted rounded-end-3"
+                  placeholder="Map location"
+                  style="box-shadow: none; "
+                />
               </div>
             </div>
+
             <button
               type="button"
               class="btn-close"
@@ -74,8 +120,8 @@
                 name="caption"
                 id="captionInput"
                 rows="3"
-                maxlength="300"
-                placeholder="What's on your mind, John?"
+               
+                placeholder="What's on your mind ?"
                 style="
                   resize: none;
                   font-size: 1rem;
@@ -120,18 +166,18 @@
                 >
               </div>
 
-              <div
+              <!-- <div
                 class="text-end text-muted mb-2"
                 id="charCount"
                 style="font-size: 0.75rem"
               >
                 0 / 300
-              </div>
+              </div> -->
 
               <div
                 class="d-flex align-items-center justify-content-between border-top pt-3 pb-1"
               >
-                <div class="d-flex gap-2">
+                <!-- <div class="d-flex gap-2">
                   <button
                     type="button"
                     class="btn btn-light btn-sm rounded-3 text-muted"
@@ -144,7 +190,7 @@
                   >
                     <i class="bi bi-geo-alt me-1"></i>Location
                   </button>
-                </div>
+                </div> -->
                 <button
                   type="submit"
                   id="postBtn"
@@ -370,17 +416,7 @@
       </div>
     </section>
     <style>
-      div.polaroid {
-        background-color: white;
-        box-shadow:
-          0 4px 8px 0 rgba(0, 0, 0, 0.2),
-          0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        margin-bottom: 5px;
-      }
-
-      div.containerr {
-        padding: 15px 15px;
-      }
+ 
     </style>
     <script>
       function handleGoogleSignIn(response) {
@@ -487,18 +523,21 @@
         });
 
       function onAuthSuccess(user) {
+          console.log("onAuthSuccess token:", localStorage.getItem("token")); // ✅
         document.querySelectorAll(".avatar").forEach((el) => {
           el.textContent = user.email[0].toUpperCase();
         });
-        const authBtn = document.querySelector('[data-bs-target="#authModal"]');
-        if (authBtn) {
-          authBtn.removeAttribute("data-bs-toggle");
-          authBtn.removeAttribute("data-bs-target");
-          authBtn.innerHTML =
-            '<i class="bi bi-box-arrow-right me-1"></i>Sign Out';
-          authBtn.addEventListener("click", signOut);
-        }
-      }
+
+
+
+      const headerBtns = document.querySelector(".app-header .d-flex");
+  headerBtns.innerHTML = `
+    <button class="btn btn-sm btn-outline-danger rounded-3" onclick="signOut()">
+      <i class="bi bi-box-arrow-right me-1"></i>Sign Out
+    </button>
+  `;
+    setTimeout(() => loadPosts(), 100); // ✅ small delay to ensure token is set
+}
 
       function signOut() {
         localStorage.removeItem("token");
@@ -506,18 +545,18 @@
       }
 
       // Restore UI on page load if already logged in
-      (function init() {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-        try {
-          const payload = JSON.parse(atob(token.split(".")[1]));
-          if (payload.exp * 1000 < Date.now())
-            return localStorage.removeItem("token");
-          onAuthSuccess({ email: payload.email });
-        } catch {
-          localStorage.removeItem("token");
-        }
-      })();
+  (function init() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp * 1000 < Date.now())
+      return localStorage.removeItem("token");
+    onAuthSuccess({ email: payload.email }); // ✅ this will call loadPosts() again after 100ms
+  } catch {
+    localStorage.removeItem("token");
+  }
+})();
 
       // ══════════ POST FORM ══════════
 
@@ -585,67 +624,135 @@
       });
 
       captionInput.addEventListener("input", () => {
-        const l = captionInput.value.length;
-        charCount.textContent = `${l} / 300`;
-        charCount.style.color =
-          l >= 300 ? "#dc3545" : l >= 250 ? "#f0ad4e" : "";
+        // const l = captionInput.value.length;
+        // charCount.textContent = `${l} / 300`;
+        // charCount.style.color =
+        //   l >= 300 ? "#dc3545" : l >= 250 ? "#f0ad4e" : "";
         checkReady();
       });
 
-      // Submit Post (with auth token)
-      postForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        postBtn.innerHTML =
-          '<span class="spinner-border spinner-border-sm me-1"></span>Posting...';
-        postBtn.disabled = true;
+   // Submit Post (with auth token)
+postForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  postBtn.innerHTML =
+    '<span class="spinner-border spinner-border-sm me-1"></span>Posting...';
+  postBtn.disabled = true;
 
-        const formData = new FormData(postForm);
-        const token = localStorage.getItem("token");
+  const formData = new FormData(postForm);
+  const token = localStorage.getItem("token");
 
-        try {
-          const res = await fetch("/create-post", {
-            method: "POST",
-            headers: { Authorization: `Bearer ${token}` },
-            body: formData,
-          });
-          if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error);
+  // ✅ Append optional fields only if filled in
+  const pictureLocation = document.getElementById("pictureLocation-input").value.trim();
+  const location = document.getElementById("location-input").value.trim();
+  if (pictureLocation) formData.append("pictureLocation", pictureLocation);
+  if (location) formData.append("location", location);
+
+  try {
+    const res = await fetch("/create-post", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error);
+    }
+
+    postBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Posted!';
+    setTimeout(() => {
+      bootstrap.Modal.getInstance(
+        document.getElementById("postModal"),
+      ).hide();
+      postBtn.innerHTML = '<i class="bi bi-send me-1"></i>Post';
+      clearImage();
+      captionInput.value = "";
+      // charCount.textContent = "0 / 300";
+      // ✅ Clear the two new fields on reset
+      document.getElementById("pictureLocation-input").value = "";
+      document.getElementById("location-input").value = "";
+      loadPosts();
+    }, 1200);
+  } catch (err) {
+    alert(err.message);
+    postBtn.innerHTML = '<i class="bi bi-send me-1"></i> Post ';
+    checkReady();
+  }
+});
+
+function renderPost(post) {
+  const template = document.getElementById("post-template");
+  const card = template.content.cloneNode(true);
+
+  const body        = card.querySelector(".post-body");
+  const img         = card.querySelector(".post-image");
+  const picHeading  = card.querySelector(".post-picture-location");
+  const locPara     = card.querySelector(".post-location");
+  const locWrapper  = card.querySelector(".post-location-wrapper");
+  const postOptions = card.querySelector(".post-options");
+  const deleteBtn   = card.querySelector(".delete-btn");
+  const polaroid    = card.querySelector(".polaroid");
+
+  // Picture location heading
+  post.pictureLocation
+    ? (picHeading.textContent = `This picture was taken at ${post.pictureLocation}`)
+    : picHeading.remove();
+
+  post.caption ? (body.textContent = post.caption) : body.remove();
+  post.imageUrl ? (img.src = post.imageUrl) : img.remove();
+
+  // Location link
+  post.location
+    ? (locPara.href = `https://www.google.com/maps/search/${encodeURIComponent(post.location)}`,
+       locPara.textContent = `📍 ${post.location}`,
+       locWrapper.classList.remove("d-none"))
+    : locWrapper.remove();
+
+  // ✅ Show delete button only to post owner
+  const token = localStorage.getItem("token");
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const userId = payload.id || payload._id || payload.userId;
+
+      console.log("userId from token:", userId);
+      console.log("post.user:", post.user);
+
+      if (String(userId) === String(post.user)) {
+        postOptions.classList.remove("d-none");
+
+        // ✅ Delete button click handler
+        deleteBtn.addEventListener("click", async () => {
+          console.log("🔴 delete button clicked");
+
+          if (!confirm("Are you sure you want to delete this post?")) return;
+
+          console.log("🟡 confirmed, post._id:", post._id);
+          console.log("🟡 token:", token);
+
+          try {
+            const res = await fetch(`/posts/${post._id}`, {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            console.log("🟢 response status:", res.status);
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.error);
+            }
+            polaroid.remove(); // ✅ remove card from DOM
+          } catch (err) {
+            console.log("🔴 error:", err.message);
+            alert(err.message);
           }
-
-          postBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i>Posted!';
-          setTimeout(() => {
-            bootstrap.Modal.getInstance(
-              document.getElementById("postModal"),
-            ).hide();
-            postBtn.innerHTML = '<i class="bi bi-send me-1"></i>Post';
-            clearImage();
-            captionInput.value = "";
-            charCount.textContent = "0 / 300";
-            loadPosts();
-          }, 1200);
-        } catch (err) {
-          alert(err.message);
-          postBtn.innerHTML = '<i class="bi bi-send me-1"></i>Post';
-          checkReady();
-        }
-      });
-
-      // ══════════ FEED ══════════
-
-      function renderPost(post) {
-        const template = document.getElementById("post-template");
-        const card = template.content.cloneNode(true);
-
-        const body = card.querySelector(".post-body");
-        const img = card.querySelector(".post-image");
-
-        post.caption ? (body.textContent = post.caption) : body.remove();
-        post.imageUrl ? (img.src = post.imageUrl) : img.remove();
-
-        return card;
+        });
       }
+    } catch(e) {
+      console.log("token decode error:", e);
+    }
+  }
 
+  return card;
+}
       async function loadPosts() {
         feed.innerHTML =
           '<p class="loading"><i class="bi bi-arrow-repeat"></i> Loading posts...</p>';
@@ -669,11 +776,35 @@
     </script>
 
     <!-- Hidden blueprint — place this anywhere, e.g. before </body> -->
-    <template id="post-template">
-      <div class="polaroid">
-        <div class="post-body containerr"></div>
-        <img class="post-image" alt="Post image" style="width: 100%" />
+<template id="post-template">
+  <div class="polaroid position-relative">
+
+    <!-- ✅ Dropdown menu (only shown to post owner) -->
+    <div class="post-options d-none position-absolute top-0 end-0 m-2">
+      <div class="dropdown">
+        <button class="btn btn-sm btn-light rounded-circle p-1 lh-1" data-bs-toggle="dropdown">
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+          <li>
+            <button class="dropdown-item text-danger delete-btn">
+              <i class="bi bi-trash me-2"></i>Delete Post
+            </button>
+          </li>
+        </ul>
       </div>
-    </template>
+    </div>
+
+    <h6 class="post-picture-location text-muted fst-italic" style="font-size:0.85rem"></h6>
+    <div class="post-location-wrapper mt-1 d-none">
+      <span style="font-size:0.8rem;" class="text-muted">Map Location </span>
+      <a class="post-location text-muted" style="font-size:0.8rem" target="_blank"></a>
+    </div>
+    <div class="post-body containerr"></div>
+    <img class="post-image" alt="Post image" style="width: 100%" />
+
+  </div>
+</template>
+
   </body>
 </html>
